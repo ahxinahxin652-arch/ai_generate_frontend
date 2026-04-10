@@ -3,9 +3,11 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 const Face = require('../models/face');
-const { createFaceTask } = require('../workers/face_worker'); // 替代 Celery 任务
+const { createFaceTask } = require('../workers/face_worker');
+const config = require('../config');
+const aliOss = require('../utils/alioss_utils'); // 引入 OSS 工具
 
-const DASHSCOPE_API_KEY = process.env.API_KEY || 'your_default_key_here';
+const DASHSCOPE_API_KEY = config.apiKeys.dashscope;
 
 // 接收捏脸参数并派发任务
 router.post('/generate', async (req, res) => {
@@ -35,8 +37,7 @@ router.post('/generate', async (req, res) => {
             status: 'PENDING'
         });
 
-        // 异步执行任务 (替代 celery_app.send_task)
-        // 在 Node.js 中，我们直接调用不等待它返回，即可模拟后台 worker
+        // 异步执行任务 (替代 Celery)
         createFaceTask(newTask.id).catch(console.error);
 
         return res.status(200).json({
@@ -99,11 +100,9 @@ router.get('/:task_id', async (req, res) => {
             }
 
             if (imgUrl) {
-                // TODO: 转存到 OSS，由于没有你的 alioss_utils.py 内容，这里保留伪代码
-                // const aliOss = require('../utils/alioss_utils');
-                // const myUrl = await aliOss.uploadFromUrl(imgUrl, 'images/faces');
-                // taskItem.result_url = myUrl || imgUrl;
-                taskItem.result_url = imgUrl;
+                // 将万相生成的图片转存到自己的 OSS 中
+                const myUrl = await aliOss.uploadFromUrl(imgUrl, 'images/faces');
+                taskItem.result_url = myUrl ? myUrl : imgUrl;
             }
 
             taskItem.status = 'SUCCEEDED';

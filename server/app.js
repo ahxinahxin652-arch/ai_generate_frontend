@@ -1,15 +1,15 @@
 // server/app.js
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { sequelize } = require('./db');
 const fs = require('fs');
 const path = require('path');
+// 引入统一配置
+const config = require('./config');
 
 const app = express();
 
-// 配置 CORS (替代 flask_cors)
+// 配置 CORS
 app.use(cors({
     origin: '*',
     credentials: true,
@@ -27,16 +27,9 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// 注册路由蓝图 (替代 app.register_blueprint)
+// 注册路由蓝图
 const faceRoutes = require('./routes/face');
 app.use('/api/face', faceRoutes);
-// TODO: 注册其他模块路由，如 /api/task, /api/img 等
-
-// 初始化数据库
-sequelize.sync().then(() => {
-    console.log('Database synced successfully.');
-}).catch(err => {
-    console.error('Failed to sync database:', err);
-});
+// TODO: 按照同样的模式注册其他模块路由，如 /api/task, /api/img 等
 
 module.exports = app;
