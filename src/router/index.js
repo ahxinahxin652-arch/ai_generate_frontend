@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+// import HomeView from '../views/HomeView.vue'
 import GenerateImage from "@/views/GenerateImage.vue";
 import GenerateImage_3d from "@/views/GenerateImage_3d.vue";
 import GenerateFace from "@/views/GenerateFace.vue";
@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: GenerateFace
   },
   {
     path: '/gi',
