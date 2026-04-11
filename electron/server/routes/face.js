@@ -32,6 +32,13 @@ router.post('/generate', async (req, res) => {
             skin_color: data.skin_color,
             skin_detail: data.skin_detail !== undefined ? parseInt(data.skin_detail) : 50,
             mole: data.mole !== undefined ? parseInt(data.mole) : 0,
+
+            // 新增的4个参数
+            nose: data.nose,
+            double_eyelid: data.double_eyelid !== undefined ? parseInt(data.double_eyelid) : 50,
+            mouth: data.mouth,
+            chin: data.chin,
+
             light_type: data.light_type,
             light_direction: data.light_direction,
             status: 'PENDING'

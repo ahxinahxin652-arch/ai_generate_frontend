@@ -12,7 +12,7 @@ async function createFaceTask(taskId) {
         const taskItem = await Face.findByPk(taskId);
         if (!taskItem) {
             console.error(`[Worker] 任务 ${taskId} 不存在`);
-            return { status: "failed", error: "任务不存在" };
+            return {status: "failed", error: "任务不存在"};
         }
 
         // --- 1. 拼接强大的 Prompt 提示词 (翻译自 Python 逻辑) ---
@@ -50,6 +50,24 @@ async function createFaceTask(taskId) {
             moleStr = "眼角带有一颗泪痣，";
         }
 
+        // --- 新增参数的 Prompt 逻辑处理 ---
+        const noseStr = taskItem.nose ? `鼻型为${taskItem.nose}，` : "";
+
+        let eyelidStr = "";
+        if (taskItem.double_eyelid > 80) {
+            eyelidStr = "拥有宽泛明显的双眼皮，";
+        } else if (taskItem.double_eyelid > 40) {
+            eyelidStr = "带有自然好看的双眼皮，";
+        } else if (taskItem.double_eyelid > 0) {
+            eyelidStr = "带有若隐若现的内双，";
+        } else {
+            eyelidStr = "非常有特色的单眼皮，";
+        }
+
+        const mouthStr = taskItem.mouth ? `嘴部表现为${taskItem.mouth}，` : "";
+        const chinStr = taskItem.chin ? `下巴呈现${taskItem.chin}，` : "";
+        // ------------------------------------
+
         let lightStr = "";
         if (taskItem.light_type || taskItem.light_direction) {
             const lType = taskItem.light_type || "摄影棚主光";
@@ -57,7 +75,18 @@ async function createFaceTask(taskId) {
             lightStr = `灯光布置：${lType}，${lDir}打光，营造出绝佳的立体感和光影氛围。`;
         }
 
-        const prompt = `高质量逼真肖像摄影，半身像，单人，正面看向镜头。 人物特征：一个${ageStr}${countryStr}${genderStr}，${faceTypeStr}发型为${taskItem.hair_color}的${taskItem.hair}，眼睛颜色为${taskItem.eye_color}，皮肤颜色为${taskItem.skin_color}，皮肤状态为${skinQuality}。 面部细节：${expressionStr}${dimpleStr}${moleStr}五官端正对称。 画面要求：极高真实感，人物面部清晰，电影级布景。 ${lightStr} 画面画质：${detailLevel}, masterpiece, best quality, photorealistic.`;
+        // 将新增的特征融合进面部细节模块，不破坏原本结构
+        const prompt = `高质量逼真肖像摄影，半身像，单人，正面看向镜头。 人物特征：
+        一个${ageStr}${countryStr}${genderStr}，${faceTypeStr}
+        发型为${taskItem.hair_color}的${taskItem.hair}，
+        眼睛颜色为${taskItem.eye_color}，
+        皮肤颜色为${taskItem.skin_color}，
+        皮肤状态为${skinQuality}。 
+        面部细节：${expressionStr}${eyelidStr}${noseStr}${mouthStr}${chinStr}${dimpleStr}${moleStr}
+        五官端正对称。 画面要求：极高真实感，人物面部清晰，电影级布景。 
+        ${lightStr} 
+        画面画质：${detailLevel},
+         masterpiece, best quality, photorealistic.`;
 
         // --- 2. API 配置与 Payload 构建 ---
         const url = "https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation";
@@ -68,7 +97,7 @@ async function createFaceTask(taskId) {
                 messages: [
                     {
                         role: "user",
-                        content: [{ text: prompt }]
+                        content: [{text: prompt}]
                     }
                 ]
             },
@@ -105,8 +134,8 @@ async function createFaceTask(taskId) {
 
     } catch (error) {
         console.error(`[Critical Error] 任务发生错误 ID: ${taskId}:`, error.response?.data || error.message);
-        await Face.update({ status: 'FAILED' }, { where: { id: taskId } });
+        await Face.update({status: 'FAILED'}, {where: {id: taskId}});
     }
 }
 
-module.exports = { createFaceTask };
+module.exports = {createFaceTask};
