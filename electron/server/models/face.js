@@ -22,7 +22,6 @@ class Face {
         this.skin_detail = data.skin_detail !== undefined ? data.skin_detail : 50;
         this.mole = data.mole || 0;
 
-        // 新增的4个参数字段
         this.nose = data.nose || null;
         this.double_eyelid = data.double_eyelid !== undefined ? data.double_eyelid : 50;
         this.mouth = data.mouth || null;

@@ -42,7 +42,7 @@
     "electron-builder": "^24.13.3",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "typescript": "~4.5.5"
+    "typescript": "^4.9.5"
   },
   "eslintConfig": {
     "root": true,
@@ -64,5 +64,33 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "build": {
+    "appId": "com.ai.generator",
+    "productName": "AI生成器",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "dist/**/*",
+      "server/**/*",
+      "electron/main.js",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  }
 }
