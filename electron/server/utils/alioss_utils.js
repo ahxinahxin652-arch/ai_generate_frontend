@@ -1,8 +1,10 @@
-// server/utils/alioss_utils.js
-require('dotenv').config();
+// electron/server/utils/alioss_utils.js
+// ✅ 正确：一定要把 path 放在真正的第一行！
+const path = require('path');
+// 此时 path 已经存在，可以安全使用了
+require('dotenv').config({ path: path.join(__dirname, '../../../.env') });
 const OSS = require('ali-oss');
 const { v4: uuidv4 } = require('uuid');
-const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const axios = require('axios');

@@ -1,4 +1,4 @@
-// server/routes/face.js
+// electron/server/routes/face.js
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
@@ -44,7 +44,7 @@ router.post('/generate', async (req, res) => {
             status: 'PENDING'
         });
 
-        // 异步执行任务 (替代 Celery)
+        // 异步执行任务
         createFaceTask(newTask.id).catch(console.error);
 
         return res.status(200).json({

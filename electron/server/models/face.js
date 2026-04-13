@@ -1,9 +1,9 @@
-// server/models/face.js
 const fs = require('fs').promises;
 const path = require('path');
+const { app } = require('electron');
 
-// 数据文件存储路径 (类似本地的 IndexedDB 库)
-const dataFilePath = path.join(__dirname, '../faces_data.json');
+// 🌟 核心：将数据存在系统的 AppData 目录下，避开打包后的只读限制，完美替代 SQLite！
+const dataFilePath = path.join(app.getPath('userData'), 'faces_data.json');
 
 class Face {
     constructor(data) {
@@ -21,12 +21,10 @@ class Face {
         this.skin_color = data.skin_color || null;
         this.skin_detail = data.skin_detail !== undefined ? data.skin_detail : 50;
         this.mole = data.mole || 0;
-
         this.nose = data.nose || null;
         this.double_eyelid = data.double_eyelid !== undefined ? data.double_eyelid : 50;
         this.mouth = data.mouth || null;
         this.chin = data.chin || null;
-
         this.light_type = data.light_type || null;
         this.light_direction = data.light_direction || null;
         this.status = data.status || 'PENDING';
@@ -36,7 +34,6 @@ class Face {
         this.updatedAt = data.updatedAt || new Date().toISOString();
     }
 
-    // 模拟 Sequelize 的 save() 方法
     async save() {
         this.updatedAt = new Date().toISOString();
         const data = await Face._readData();
@@ -50,19 +47,15 @@ class Face {
         return this;
     }
 
-    // 模拟 toJSON() 方法
     toJSON() {
         return { ...this };
     }
-
-    // --- 静态方法 ---
 
     static async _readData() {
         try {
             const content = await fs.readFile(dataFilePath, 'utf-8');
             return JSON.parse(content);
         } catch (error) {
-            // 如果文件不存在，返回空数组
             if (error.code === 'ENOENT') return [];
             throw error;
         }
@@ -72,20 +65,16 @@ class Face {
         await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2), 'utf-8');
     }
 
-    // 模拟 Sequelize 的 create() 方法
     static async create(data) {
         const allData = await this._readData();
-        // 自动生成递增 ID
         const maxId = allData.length > 0 ? Math.max(...allData.map(d => d.id)) : 0;
         data.id = maxId + 1;
-
         const newFace = new Face(data);
         allData.push(newFace);
         await this._writeData(allData);
         return newFace;
     }
 
-    // 模拟 Sequelize 的 findByPk() 方法
     static async findByPk(id) {
         const allData = await this._readData();
         const item = allData.find(d => d.id === parseInt(id));

@@ -1,7 +1,7 @@
-// main.js
+// electron/main.js
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const serverApp = require('./server/app'); // 引入转换后的 Express 服务器
+const serverApp = require('./server/app');
 
 const PORT = 5000;
 let mainWindow;
@@ -17,12 +17,12 @@ function createWindow() {
         }
     });
 
-    // 在开发环境下加载本地 Vue 服务，生产环境下加载打包好的静态文件
     if (process.env.NODE_ENV === 'development') {
         mainWindow.loadURL('http://localhost:8080');
         mainWindow.webContents.openDevTools();
     } else {
-        mainWindow.loadFile(path.join(__dirname, 'dist/index.html'));
+        // 2. 关键修改：因为 main.js 在 electron 文件夹下，所以要加 ../ 跳到根目录找 dist
+        mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
     }
 }
 

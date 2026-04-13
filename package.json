@@ -4,10 +4,10 @@
   "private": true,
   "main": "electron/main.js",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "chcp 65001 && vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "electron:serve": "cross-env NODE_ENV=development electron .",
+    "electron:serve": "chcp 65001 && cross-env NODE_ENV=development electron .",
     "electron:build": "npm run build && electron-builder"
   },
   "dependencies": {
@@ -73,8 +73,8 @@
     },
     "files": [
       "dist/**/*",
-      "server/**/*",
-      "electron/main.js",
+      "electron/**/*",
+      ".env",
       "package.json"
     ],
     "mac": {

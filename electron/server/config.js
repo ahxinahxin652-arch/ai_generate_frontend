@@ -1,6 +1,8 @@
-// server/config.js
+// electron/server/config.js
 // 这一句非常关键，它会读取根目录下的 .env 文件并将变量挂载到 process.env 上
-require('dotenv').config();
+// __dirname 是 electron/server/，跳两层 ../../ 即可到达项目根目录
+const {join} = require("node:path");
+require('dotenv').config({ path: join(__dirname, '../../.env') });
 
 module.exports = {
     // 阿里云 OSS 配置
